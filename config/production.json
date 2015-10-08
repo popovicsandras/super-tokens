@@ -3,7 +3,7 @@
   "logLevel": "short",
   "db" : {
     "host": "localhost",
-    "port": 27017,
+    "port": 27777,
     "name": "supertokens"
   }
 }
