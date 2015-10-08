@@ -1,4 +1,9 @@
 {
   "port": 9000,
-  "logLevel": "short"
+  "logLevel": "short",
+  "db" : {
+    "host": "localhost",
+    "port": 27017,
+    "name": "supertokens"
+  }
 }
