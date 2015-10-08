@@ -28,10 +28,12 @@
   },
   "devDependencies": {
     "chai": "^3.2.0",
+    "database-cleaner": "^0.10.0",
     "jshint": "^2.8.0",
     "jshint-stylish": "^2.0.1",
     "mocha": "^2.3.2",
     "mocha-runner": "^1.1.1",
+    "mongodb-fixture": "^1.0.0",
     "nodemon": "^1.6.1",
     "sinon": "^1.16.1",
     "sinon-chai": "^2.8.0",
