@@ -1,5 +1,5 @@
-# Microservice
-Microservice skeleton
+# Super-tokens
+Only super tokens, that's all.
 
 ## Pre-requisites
 
