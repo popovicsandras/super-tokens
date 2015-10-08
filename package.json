@@ -1,0 +1,36 @@
+{
+  "name": "microservice",
+  "version": "1.0.0",
+  "description": "RESTful Microservice skeleton",
+  "main": "service.js",
+  "scripts": {
+    "start": "export NODE_ENV=production; node app.js",
+    "serve": "export NODE_ENV=development; nodemon app.js",
+    "pretest": "jshint --reporter=node_modules/jshint-stylish **/**.js",
+    "test": "export NODE_ENV=test; mocha-runner 'test/setup.js' 'test/**/**.spec.js'"
+  },
+  "author": "Andras Popovics",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/popovicsandras/microservice.git"
+  },
+  "dependencies": {
+    "config": "^1.16.0",
+    "express": "^4.13.3",
+    "morgan": "^1.6.1",
+    "swagger-ui": "^2.1.3",
+    "swagger-ui-middleware": "^1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "jshint": "^2.8.0",
+    "jshint-stylish": "^2.0.1",
+    "mocha": "^2.3.2",
+    "mocha-runner": "^1.1.1",
+    "nodemon": "^1.6.1",
+    "sinon": "^1.16.1",
+    "sinon-chai": "^2.8.0",
+    "supertest": "^1.1.0"
+  }
+}
