@@ -3,15 +3,26 @@ Only super tokens, that's all.
 
 ## Pre-requisites
 
-Install a recent version of [Node.js and Node package manager (npm)](http://nodejs.org) via your preferred method.
+- Install a recent version of [Node.js and Node package manager (npm)](http://nodejs.org) via your preferred method.
+
+- Install MongoDb. [MongoDb on OSX](http://docs.mongodb.org/manual/tutorial/install-mongodb-on-os-x/)
 
 ## Setup
 
-In the project directory, launch:
+### In the project directory, launch to install dependencies:
 
     npm install
-
 You'll need to do this once or when dependencies change.
+
+### Start MongoDb:
+
+    mongod --port 27017
+    
+### Create the production and test databases:
+
+     npm run installdb
+     npm run installtestdb
+
 
 ## Run
 
