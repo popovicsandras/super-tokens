@@ -14,9 +14,13 @@ Only super tokens, that's all.
     npm install
 You'll need to do this once or when dependencies change.
 
-### Start MongoDb:
+### Start MongoDb services (you may need sudo):
 
-    mongod --port 27017
+#### Production
+    mongod --port 27777
+    
+#### Test
+    mongod --dbpath /to/your/testdb --port 28888
     
 ### Create the production and test databases:
 
