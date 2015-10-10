@@ -6,39 +6,28 @@ class Tokens {
         this.client = client;
     }
 
-    findActiveTokens(userUuid) {
-        //return new Promise(function(resolve, reject) {
-        //    this._connect()
-        //        .then(this._findActiveTokens.bind(this, userUuid))
-        //        .then(this.resolvePromise.bind(this, resolve))
-        //        .then(this._close)
-        //        .catch(reject);
-        //    }.bind(this)
-        //);
+    findActive(userUuid) {
+        return new Promise(this._findActive.bind(this, userUuid));
+    }
 
-        var promiseResolve,
-            promiseReject,
-            promise;
-
-        promise = new Promise(function(resolve, reject) {
-            promiseResolve = resolve;
-            promiseReject = reject;
-        });
-
+    _findActive(userUuid, resolve, reject) {
         this._connect()
-            .then(this._findActiveTokens.bind(this, userUuid))
-            .then(this.resolvePromise.bind(this, promiseResolve))
+            .then(this._queryActive.bind(this, userUuid))
+            .then(this._resolvePromise.bind(this, resolve))
             .then(this._close)
-            .catch(promiseReject);
-
-        return promise;
+            .catch(reject);
     }
 
-    _findActiveTokens(userUuid, database) {
-        return database.find(userUuid);
+    _queryActive(userUuid, database) {
+        return database.find({
+            useruuid: userUuid,
+            expirydate: {
+                $gt: Date.now()
+            }
+        });
     }
 
-    resolvePromise(resolve, promiseResults) {
+    _resolvePromise(resolve, promiseResults) {
         resolve(promiseResults.results);
         return promiseResults.database;
     }
