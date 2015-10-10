@@ -1,5 +1,15 @@
 'use strict';
 
+function resolvePromise(resolve, promiseResults) {
+    resolve(promiseResults.results);
+    return promiseResults.database;
+}
+
+function closeDatabase(database) {
+    database.close();
+}
+
+/** class Tokens */
 class Tokens {
 
     constructor(client) {
@@ -7,17 +17,11 @@ class Tokens {
     }
 
     findActive(userUuid) {
-        return new Promise(this._findActive.bind(this, userUuid));
+        var queryMethod = this._queryActive.bind(null, userUuid);
+        return new Promise(this._runDbQuery.bind(this, queryMethod));
     }
 
-    _findActive(userUuid, resolve, reject) {
-        this._connect()
-            .then(this._queryActive.bind(this, userUuid))
-            .then(this._resolvePromise.bind(this, resolve))
-            .then(this._close)
-            .catch(reject);
-    }
-
+    /** @private */
     _queryActive(userUuid, database) {
         return database.find({
             useruuid: userUuid,
@@ -27,17 +31,16 @@ class Tokens {
         });
     }
 
-    _resolvePromise(resolve, promiseResults) {
-        resolve(promiseResults.results);
-        return promiseResults.database;
-    }
+    /** @private */
+    _runDbQuery(queryMethod, resolve, reject) {
 
-    _connect() {
-        return this.client.connect();
-    }
+        var resolve = resolvePromise.bind(null, resolve);
 
-    _close(database) {
-        database.close();
+        this.client.connect()
+            .then(queryMethod)
+            .then(resolve)
+            .then(closeDatabase)
+            .catch(reject);
     }
 }
 
