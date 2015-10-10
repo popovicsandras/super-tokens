@@ -1,46 +1,25 @@
 'use strict';
 
-function resolvePromise(resolve, promiseResults) {
-    resolve(promiseResults.results);
-    return promiseResults.database;
-}
-
-function closeDatabase(database) {
-    database.close();
-}
+var PromisedMongo = require('./database/PromisedMongo');
 
 /** class Tokens */
 class Tokens {
 
     constructor(client) {
-        this.client = client;
+        this.mongo = new PromisedMongo(client);
     }
 
     findActive(userUuid) {
-        var queryMethod = this._queryActive.bind(null, userUuid);
-        return new Promise(this._runDbQuery.bind(this, queryMethod));
-    }
+        var queryMethod = function queryMethod(database) {
+            return database.find({
+                useruuid: userUuid,
+                expirydate: {
+                    $gt: Date.now()
+                }
+            });
+        };
 
-    /** @private */
-    _queryActive(userUuid, database) {
-        return database.find({
-            useruuid: userUuid,
-            expirydate: {
-                $gt: Date.now()
-            }
-        });
-    }
-
-    /** @private */
-    _runDbQuery(queryMethod, resolve, reject) {
-
-        var resolve = resolvePromise.bind(null, resolve);
-
-        this.client.connect()
-            .then(queryMethod)
-            .then(resolve)
-            .then(closeDatabase)
-            .catch(reject);
+        return this.mongo.getPromise(queryMethod);
     }
 }
 
