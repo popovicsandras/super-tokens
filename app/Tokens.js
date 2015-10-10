@@ -1,22 +1,23 @@
 'use strict';
 
-var PromisedMongo = require('./database/PromisedMongo');
+var QueryRunner = require('./database/QueryRunner');
 
 /** class Tokens */
 class Tokens {
 
     constructor(client) {
-        this.mongo = new PromisedMongo(client);
+        this.mongo = new QueryRunner(client);
     }
 
     findActive(userUuid) {
         var queryMethod = function queryMethod(database) {
-            return database.find({
-                useruuid: userUuid,
-                expirydate: {
-                    $gt: Date.now()
-                }
-            });
+            return database.collection('tokens')
+                    .find({
+                        useruuid: userUuid,
+                        expirydate: {
+                            $gt: Date.now()
+                        }
+                    }).toArray();
         };
 
         return this.mongo.getPromise(queryMethod);

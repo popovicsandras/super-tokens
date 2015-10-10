@@ -2,56 +2,48 @@
 
 'use strict';
 
-var Tokens = require('../../app/Tokens');
-
-class Client {
-    constructor(database) {
-        this.database = database;
-    }
-
-    connect() {
-        return Promise.resolve(this.database);
-    }
-}
-
-class Database {
-    constructor(documents) {
-        this.documents = documents;
-    }
-
-    close() {}
-
-    find() {
-        return Promise.resolve({
-            database: this,
-            results: this.documents
-        });
-    }
-}
+var Tokens = require('../../app/Tokens'),
+    MongoClient = require('../../app/database/SuperTokensMongoClient');
 
 describe('Tokens', function() {
 
+    var collection,
+        database,
+        client,
+        tokens,
+        activeTokenDocuments,
+        userUuid;
+
     describe('findActive', function() {
 
-        var database,
-            client,
-            tokens,
-            activeTokenDocuments,
-            userUuid;
-
-        beforeEach(function() {
+        before(function() {
             userUuid = 12345;
             activeTokenDocuments = [1,2,3,4];
-            database = new Database(activeTokenDocuments);
-            client = new Client(database);
-            tokens = new Tokens(client);
+        });
 
-            sinon.spy(client, 'connect');
-            sinon.spy(database, 'close');
-            sinon.spy(database, 'find');
+        beforeEach(function() {
+            collection = {
+                find: function() { return this; },
+                toArray: function() {
+                    return Promise.resolve(activeTokenDocuments);
+                }
+            };
+            database = {
+                close: function(){},
+                collection: function() { return collection; }
+            };
+            client = new MongoClient();
+
+            sinon.stub(client, 'connect', function() {
+                return Promise.resolve(database);
+            });
         });
 
         it('should open and close db connection', function(done) {
+
+            // Arrange
+            sinon.spy(database, 'close');
+            tokens = new Tokens(client);
 
             // Act
             tokens.findActive(userUuid);
@@ -71,12 +63,15 @@ describe('Tokens', function() {
             var nowTimeStamp = 999,
                 clock = sinon.useFakeTimers(nowTimeStamp, "Date");
 
+            sinon.spy(collection, 'find');
+            tokens = new Tokens(client);
+
             // Act
             tokens.findActive(userUuid);
 
             // Assert
             setImmediate(function() {
-                expect(database.find).to.have.been.calledWith({
+                expect(collection.find).to.have.been.calledWith({
                     useruuid: 12345,
                     expirydate: {
                         $gt: nowTimeStamp
@@ -88,6 +83,10 @@ describe('Tokens', function() {
         });
 
         it('should return a promise which will be fullfilled with the results', function (done) {
+
+            // Arrange
+            tokens = new Tokens(client);
+
             // Act
             tokens.findActive(userUuid)
                 .then(function(documents) {
@@ -101,7 +100,8 @@ describe('Tokens', function() {
         it('should catch the thrown error', function (done) {
 
             // Arrange
-            database.find = function() {
+            tokens = new Tokens(client);
+            collection.find = function() {
                 throw new Error('Find error');
             };
 
