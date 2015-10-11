@@ -2,34 +2,24 @@
 
 var http = require('http');
 var express = require('express');
-var SampleAPI = require('./api/SampleAPI');
-var VersionAPI = require('./api/VersionAPI');
+var AdminRouter = require('./router/AdminRouter');
 
-var swaggerUiMiddleware = require('swagger-ui-middleware');
+//var swaggerUiMiddleware = require('swagger-ui-middleware');
 
 function Service(apis) {
     apis = apis || {};
-    this.sampleAPI = apis.sampleAPI ? apis.sampleAPI: new SampleAPI();
-    this.versionAPI  = apis.versionAPI ? apis.versionAPI : new VersionAPI();
+    this.adminRouter = new AdminRouter();
+
 }
 
 Service.prototype = {
 
     start: function(port) {
-        var app = express(),
-            sampleAPI = this.sampleAPI,
-            versionAPI = this.versionAPI;
+        var app = express();
 
-        // /api-doc endpoint
-        swaggerUiMiddleware.hostUI(app, {overrides: __dirname + '/../swagger-ui/'});
+        this.adminRouter.init();
 
-        app.get('/sample', function(request, response) {
-            sampleAPI.get(request, response);
-        });
-
-        app.get('/admin/version', function(request, response) {
-            versionAPI.get(request, response);
-        });
+        app.use('/admin',this.adminRouter.getRouter());
 
         var server = http.createServer(app);
         server.listen(port, function() {
@@ -38,6 +28,8 @@ Service.prototype = {
 
         return server;
     }
+
+
 };
 
 module.exports = Service;

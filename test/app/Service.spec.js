@@ -31,4 +31,11 @@ describe('Service', function() {
             })
             .end(done);
     });
+
+    it('should respond with 200 OK and api version on succesful call',function(){
+
+  
+
+
+    });
 });
