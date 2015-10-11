@@ -1,0 +1,13 @@
+'use strict';
+
+var url = require('url');
+
+class Middleware {
+
+    constructor(config) {
+        this.name = config.environment + '_session_id';
+    }
+
+};
+
+module.exports = Middleware;
