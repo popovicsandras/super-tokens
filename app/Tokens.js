@@ -1,26 +1,26 @@
 'use strict';
 
-var QueryRunner = require('./database/QueryRunner');
-
-/** class Tokens */
 class Tokens {
 
-    constructor(client) {
-        this.mongo = new QueryRunner(client);
+    constructor(database) {
+        this.mongo = database;
     }
 
     findActive(userUuid) {
-        var queryMethod = function queryMethod(database) {
-            return database.collection('tokens')
-                    .find({
-                        useruuid: userUuid,
-                        expirydate: {
-                            $gt: Date.now()
-                        }
-                    }).toArray();
-        };
-
-        return this.mongo.getPromise(queryMethod);
+        try {
+            return this.mongo
+                .collection('tokens')
+                .find({
+                    useruuid: userUuid,
+                    expirydate: {
+                        $gt: Date.now()
+                    }
+                })
+                .toArray();
+        }
+        catch (error) {
+            return Promise.reject(new Error());
+        }
     }
 }
 

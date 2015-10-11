@@ -2,7 +2,6 @@
 
 var MongoClient = require('mongodb').MongoClient;
 
-/** @class SuperTokensMongoClient */
 class SuperTokensMongoClient {
 
     constructor(config) {

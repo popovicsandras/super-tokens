@@ -9,7 +9,6 @@ describe('Tokens', function() {
 
     var collection,
         database,
-        client,
         tokens,
         activeTokenDocuments,
         userUuid;
@@ -29,32 +28,8 @@ describe('Tokens', function() {
                 }
             };
             database = {
-                close: function(){},
                 collection: function() { return collection; }
             };
-            client = new MongoClient();
-
-            sinon.stub(client, 'connect', function() {
-                return Promise.resolve(database);
-            });
-        });
-
-        it('should open and close db connection', function(done) {
-
-            // Arrange
-            sinon.spy(database, 'close');
-            tokens = new Tokens(client);
-
-            // Act
-            tokens.findActive(userUuid);
-
-            // Assert
-            expect(client.connect).to.have.been.calledOnce;
-
-            setImmediate(function() {
-                expect(database.close).to.have.been.calledOnce;
-                done();
-            });
         });
 
         it('should call the database\'s find method with the passed uuid and the current date', function (done) {
@@ -64,7 +39,7 @@ describe('Tokens', function() {
                 clock = sinon.useFakeTimers(nowTimeStamp, "Date");
 
             sinon.spy(collection, 'find');
-            tokens = new Tokens(client);
+            tokens = new Tokens(database);
 
             // Act
             tokens.findActive(userUuid);
@@ -85,7 +60,7 @@ describe('Tokens', function() {
         it('should return a promise which will be fullfilled with the results', function (done) {
 
             // Arrange
-            tokens = new Tokens(client);
+            tokens = new Tokens(database);
 
             // Act
             tokens.findActive(userUuid)
@@ -97,12 +72,12 @@ describe('Tokens', function() {
 
         });
 
-        it('should catch the thrown error', function (done) {
+        it('should catch the thrown error in toArray', function (done) {
 
             // Arrange
-            tokens = new Tokens(client);
-            collection.find = function() {
-                throw new Error('Find error');
+            tokens = new Tokens(database);
+            collection.toArray = function() {
+                return Promise.reject(new Error('Find error'));
             };
 
             // Act
@@ -112,6 +87,24 @@ describe('Tokens', function() {
                     expect(error.message).to.be.equal('Find error');
                     done();
                 });
+        });
+
+        it('should catch the thrown error in collection', function (done) {
+
+            // Arrange
+            tokens = new Tokens(database);
+            database.collection = function() {
+                throw new Error('Not existing collection');
+            };
+
+            // Act
+            tokens.findActive(userUuid)
+                .catch(function(error) {
+                    // Assert
+                    expect(error).to.be.not.undefined;
+                    done();
+                });
+            process.nextTick(function() {});
         });
     });
 });
