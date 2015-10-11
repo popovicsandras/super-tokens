@@ -1,4 +1,5 @@
 {
+  "environment": "qa",
   "port": 9002,
   "logLevel": "short",
   "db" : {

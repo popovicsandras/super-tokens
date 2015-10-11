@@ -1,4 +1,5 @@
 {
+  "environment":"qa",
   "port": 9001,
   "logLevel": "dev",
   "db" : {

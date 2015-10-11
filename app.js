@@ -1,4 +1,5 @@
 var Service = require('./app/Service');
 var config = require('config');
+var express = require('express');
 
-new Service().start(config.get('port'));
+new Service(config).start(express());

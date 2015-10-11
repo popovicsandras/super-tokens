@@ -2,15 +2,20 @@
 
 var appPackageJSON = require('../../package.json');
 
-var VersionAPI = function(packageJSON) {
-    this.configJSON = packageJSON ? packageJSON : appPackageJSON;
-};
+class VersionAPI {
+    
+    constructor(packageJSON) {
+        this.configJSON = packageJSON || appPackageJSON;
+    }
 
-VersionAPI.prototype = {
+    install(app) {
+        var api = this;
+        app.get('/admin/version', function(request, response) {
+            api.get(request, response);
+        });
+    }
 
-    configJSON: null,
-
-    get: function(request, response) {
+    get(request, response) {
         var result = {};
 
         if(this.configJSON && this.configJSON.version) {

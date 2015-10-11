@@ -1,36 +1,34 @@
 'use strict';
 
 var http = require('http');
-var express = require('express');
 var SampleAPI = require('./api/SampleAPI');
 var VersionAPI = require('./api/VersionAPI');
 
+var AuthenticationMiddleware = require('./auth/Middleware');
 var swaggerUiMiddleware = require('swagger-ui-middleware');
 
-function Service(apis) {
-    apis = apis || {};
-    this.sampleAPI = apis.sampleAPI ? apis.sampleAPI: new SampleAPI();
-    this.versionAPI  = apis.versionAPI ? apis.versionAPI : new VersionAPI();
-}
+class Service {
 
-Service.prototype = {
+    constructor(configuration, versionAPI, sampleAPI, authentication) {
+        this.configuration = configuration;
+        this.sampleAPI = sampleAPI || new SampleAPI();
+        this.versionAPI  = versionAPI || new VersionAPI();
+        this.authentication = authentication || new AuthenticationMiddleware(this.configuration);
+    }
 
-    start: function(port) {
-        var app = express(),
-            sampleAPI = this.sampleAPI,
-            versionAPI = this.versionAPI;
+    start(app) {
+        // how do we test this?
+        var cookieParser = require('cookie-parser');
+        app.use(cookieParser());
 
-        // /api-doc endpoint
+        // how do we test this?
         swaggerUiMiddleware.hostUI(app, {overrides: __dirname + '/../swagger-ui/'});
 
-        app.get('/sample', function(request, response) {
-            sampleAPI.get(request, response);
-        });
-
-        app.get('/admin/version', function(request, response) {
-            versionAPI.get(request, response);
-        });
-
+        this.versionAPI.install(app);
+        this.authentication.install(app, this.configuration);
+        this.sampleAPI.install(app);
+        
+        var port = this.configuration.port;
         var server = http.createServer(app);
         server.listen(port, function() {
             console.log('Service started on port ' + port);
@@ -38,6 +36,6 @@ Service.prototype = {
 
         return server;
     }
-};
+}
 
 module.exports = Service;

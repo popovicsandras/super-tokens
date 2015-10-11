@@ -1,11 +1,12 @@
 'use strict';
 
 var url = require('url');
+var Cirrus = require('./Cirrus');
 
 class Middleware {
 
     constructor(config, cirrus) {
-        this.cirrus = cirrus;
+        this.cirrus = cirrus || new Cirrus(config);
         this.cookieName = config.environment + '_session_id';
     }
 
