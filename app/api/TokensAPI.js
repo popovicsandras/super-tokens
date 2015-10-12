@@ -30,7 +30,10 @@ class TokensAPI {
     }
 
     create(request, response) {
-        var resultPromise = this.tokens.create(request.body.TokenRequest);
+        var tokenData = request.body.TokenRequest;
+        tokenData.useruuid = request.params.uuid;
+
+        var resultPromise = this.tokens.create(tokenData);
 
         resultPromise.success(this.sendData.bind(this, response));
         resultPromise.error(this.sendError.bind(this, response));
