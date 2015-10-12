@@ -1,34 +1,122 @@
 {
-    "swagger": "2.0",
-    "basePath": "/",
-    "schemes": [
-        "http"
-    ],
-    "paths": {
-        "/": {
-            "get": {
-                "tags": [
-                    "Hello world"
-                ],
-                "summary": "Get hello world",
-                "description": "Get hello world",
-                "operationId": "hello-world",
-                "consumes": [
-                    "application/json",
-                    "application/xml"
-                ],
-                "produces": [
-                    "application/json",
-                    "application/xml"
-                ]
-            }
+  "swagger": "2.0",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+
+    "/api/tokens": {
+      "get": {
+        "tags": [
+          "Tokens"
+        ],
+        "summary": "Get country information for comma separated IP addresses",
+        "description": "Get country information for comma separated IP addresses",
+        "operationId": "getCountryInfoByIps",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "sessionid",
+            "description": "A non-expired session token acquired from Sessions API",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid parameter(s) supplied"
+          }
         }
+      },
+      "post": {
+        "tags": [
+          "Tokens"
+        ],
+        "summary": "Get country information for comma separated IP addresses",
+        "description": "Get country information for comma separated IP addresses",
+        "operationId": "getCountryInfoByIps",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "sessionid",
+            "description": "A non-expired session token acquired from Sessions API",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "TokenRequest",
+            "description": "The token to be added in the system",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid parameter(s) supplied"
+          }
+        }
+      }
     },
-    "securityDefinitions": {
-        "api_key": {
-            "type": "apiKey",
-            "name": "api_key",
-            "in": "header"
+    "/api/tokens/{uuid}": {
+      "delete": {
+        "tags": [
+          "Tokens"
+        ],
+        "summary": "Get country information for comma separated IP addresses",
+        "description": "Get country information for comma separated IP addresses",
+        "operationId": "getCountryInfoByIps",
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "uuid",
+            "description": "The token's uuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "sessionid",
+            "description": "A non-expired session token acquired from Sessions API",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid parameter(s) supplied"
+          }
         }
+      }
     }
+    },
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "api_key",
+      "in": "header"
+    }
+  }
 }
