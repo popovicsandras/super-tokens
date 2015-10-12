@@ -50,7 +50,7 @@ class TokensAPI {
 
     sendError(response, data) {
         response.status(500);
-        response.json(data);
+        response.json(data.message);
     }
 };
 
