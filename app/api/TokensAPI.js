@@ -1,6 +1,6 @@
 var TokensManager = require('./TokensManager');
 
-function TokensAPI(user) {
+function TokensAPI() {
     'use strict';
     this.tokensManager = new TokensManager();
 }
