@@ -54,7 +54,7 @@ describe('TokensAPI', function() {
 
     it('should respond with the user\'s tokens list', function() {
         // Arrange
-        var stubFindAllTokensOfUser = sinon.stub(tokensAPI.tokensManager, 'findAllTokensOfUser', function() {
+        var stubFindAllTokensOfUser = sinon.stub(tokensAPI.tokens, 'findAllTokensOfUser', function() {
             return fakePromise;
         });
 
@@ -77,7 +77,7 @@ describe('TokensAPI', function() {
 
     it('should send an error if something went wrong while retrieving the user\'s tokens list', function() {
         // Arrange
-        var stubFindAllTokensOfUser = sinon.stub(tokensAPI.tokensManager, 'findAllTokensOfUser', function() {
+        var stubFindAllTokensOfUser = sinon.stub(tokensAPI.tokens, 'findAllTokensOfUser', function() {
             return fakePromise;
         });
 
@@ -97,7 +97,7 @@ describe('TokensAPI', function() {
 
     it('should ask at the token manager to create a new token ', function() {
         // Arrange
-        var stubCreate = sinon.stub(tokensAPI.tokensManager, 'create', function() {
+        var stubCreate = sinon.stub(tokensAPI.tokens, 'create', function() {
             return fakePromise;
         });
 
@@ -116,7 +116,7 @@ describe('TokensAPI', function() {
 
     it('should send an error if the token manager is unable to create a new token', function() {
         // Arrange
-        var stubCreate = sinon.stub(tokensAPI.tokensManager, 'create', function() {
+        var stubCreate = sinon.stub(tokensAPI.tokens, 'create', function() {
             return fakePromise;
         });
 
@@ -137,7 +137,7 @@ describe('TokensAPI', function() {
 
     it('should ask at the token manager to delete a token given its id', function() {
         // Arrange
-        var stubDelete = sinon.stub(tokensAPI.tokensManager, 'delete', function() {
+        var stubDelete = sinon.stub(tokensAPI.tokens, 'delete', function() {
             return fakePromise;
         });
         request.params.uuid = 1234;
@@ -155,7 +155,7 @@ describe('TokensAPI', function() {
 
     it('should send an error if the token manager is unable to delete a token given its id', function() {
         // Arrange
-        var stubDelete = sinon.stub(tokensAPI.tokensManager, 'delete', function() {
+        var stubDelete = sinon.stub(tokensAPI.tokens, 'delete', function() {
             return fakePromise;
         });
         request.params.uuid = 1234;
@@ -169,6 +169,49 @@ describe('TokensAPI', function() {
 
         // Teardown
         stubDelete.restore();
+    });
+
+    describe('install', function() {
+
+        var app;
+
+        beforeEach(() => {
+            app = {
+                get: sinon.spy(),
+                post: sinon.spy(),
+                delete: sinon.spy()
+            };
+        });
+
+        it('should attach endpoints', function() {
+
+            // Act
+            tokensAPI.install(app);
+
+            // Assert
+            expect(app.get).has.been.calledWith('/api/tokens');
+            expect(app.get).has.been.calledWith('/api/tokens/:uuid');
+            expect(app.post).has.been.calledWith('/api/tokens');
+            expect(app.delete).has.been.calledWith('/api/tokens');
+        });
+
+        it('should attach methods to endpoints', function() {
+
+            // Arrange
+            tokensAPI.install(app);
+
+            // Act
+            var getAll = app.get.firstCall.args[1];
+            var getOne = app.get.secondCall.args[1];
+            var post = app.post.firstCall.args[1];
+            var deleteCallback = app.delete.firstCall.args[1];
+
+            // Assert
+            expect(getAll.name).match(/getAll/);
+            expect(getOne.name).match(/getById/);
+            expect(post.name).match(/create/);
+            expect(deleteCallback.name).match(/delete/);
+        });
     });
 
 });

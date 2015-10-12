@@ -1,7 +1,7 @@
 var mongo = require('mongodb');
 var db = require('monk')('localhost/tokensdb');
 
-function TokensManager(tokensCollection) {
+function Tokens(tokensCollection) {
     if(tokensCollection) {
         this.tokensCollection = tokensCollection;
     } else {
@@ -10,7 +10,7 @@ function TokensManager(tokensCollection) {
 }
 
 
-TokensManager.prototype = {
+Tokens.prototype = {
 
     findAllTokensOfUser: function(userUuid) {
         var promise = this.tokensCollection.find({useruuid: userUuid});
@@ -36,4 +36,4 @@ TokensManager.prototype = {
 
 };
 
-module.exports = TokensManager;
+module.exports = Tokens;

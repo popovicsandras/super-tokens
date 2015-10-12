@@ -33,4 +33,35 @@ describe('Service', function() {
             })
             .end(done);
     });
+
+    it('should call the middleware and router installations in the right order', function() {
+
+        // Arrange
+        function mockInstall(order, name) {
+            return {
+                install: function() {
+                   order.push(name);
+                }
+            }
+        }
+
+        var order = [],
+            config = {'port':1234},
+            versionAPI = mockInstall(order, 'versionAPI'),
+            tokensApi = mockInstall(order, 'tokensAPI'),
+            authentication = mockInstall(order, 'authentication');
+
+        // Act
+        var service = new Service(config, versionAPI, tokensApi, authentication);
+        var serv = service.start(express());
+
+        // Assert
+        expect(order).to.be.eql([
+            'versionAPI',
+            'authentication',
+            'tokensAPI'
+        ]);
+
+        serv.close();
+    })
 });

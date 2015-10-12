@@ -1,46 +1,54 @@
-var TokensManager = require('./TokensManager');
+'use strict';
 
-function TokensAPI() {
-    'use strict';
-    this.tokensManager = new TokensManager();
-}
+var Tokens = require('./Tokens');
 
-TokensAPI.prototype = {
+class TokensAPI {
 
-    getAll: function(request, response) {
-        var resultPromise = this.tokensManager.findAllTokensOfUser(request.user.uuid);
+    constructor(tokens) {
+        this.tokens = tokens || new Tokens();
+    }
 
-        resultPromise.success(this.sendData.bind(this, response));
-        resultPromise.error(this.sendError.bind(this, response));
-    },
+    install(app) {
+        app.get('/api/tokens', this.getAll.bind(this));
+        app.get('/api/tokens/:uuid', this.getById.bind(this));
+        app.post('/api/tokens', this.create.bind(this));
+        app.delete('/api/tokens', this.delete.bind(this));
+    }
 
-    getById: function(request, response) {
-        var resultPromise = this.tokensManager.findById(request.params.uuid);
-
-        resultPromise.success(this.sendData.bind(this, response));
-        resultPromise.error(this.sendError.bind(this, response));
-    },
-
-    create: function (request, response) {
-        var resultPromise = this.tokensManager.create(request.body.TokenRequest);
+    getAll (request, response) {
+        var resultPromise = this.tokens.findAllTokensOfUser(request.user.uuid);
 
         resultPromise.success(this.sendData.bind(this, response));
         resultPromise.error(this.sendError.bind(this, response));
-    },
+    }
 
-    delete: function (request, response) {
-        var resultPromise = this.tokensManager.delete(request.params.uuid);
+    getById(request, response) {
+        var resultPromise = this.tokens.findById(request.params.uuid);
 
         resultPromise.success(this.sendData.bind(this, response));
         resultPromise.error(this.sendError.bind(this, response));
-    },
+    }
 
-    sendData: function(response, data) {
+    create(request, response) {
+        var resultPromise = this.tokens.create(request.body.TokenRequest);
+
+        resultPromise.success(this.sendData.bind(this, response));
+        resultPromise.error(this.sendError.bind(this, response));
+    }
+
+    delete(request, response) {
+        var resultPromise = this.tokens.delete(request.params.uuid);
+
+        resultPromise.success(this.sendData.bind(this, response));
+        resultPromise.error(this.sendError.bind(this, response));
+    }
+
+    sendData(response, data) {
         response.status(200);
         response.json(data);
-    },
+    }
 
-    sendError: function(response, data) {
+    sendError(response, data) {
         response.status(500);
         response.json(data);
     }

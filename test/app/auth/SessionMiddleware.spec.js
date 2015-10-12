@@ -2,9 +2,9 @@
 
 'use strict';
 
-var Middleware = require('../../../app/auth/Middleware');
+var SessionMiddleware = require('../../../app/auth/SessionMiddleware');
 
-describe('Middleware', function() {
+describe('SessionMiddleware', function() {
 
     var config,
         cirrus,
@@ -18,12 +18,12 @@ describe('Middleware', function() {
             currentUser: sinon.spy()
         };
 
-        middleware = new Middleware(config, cirrus);
+        middleware = new SessionMiddleware(config, cirrus);
     });
 
 
     describe('install', function() {
-        it.skip('should invoke use on the app when installed', function() {
+        it('should invoke use on the app when installed', function() {
             // Arrange
             var app = {
                 use: sinon.spy()
@@ -33,7 +33,7 @@ describe('Middleware', function() {
             middleware.install(app);
 
             // Assert
-            expect(app.use).calledWith(middleware.filter.bind(middleware));
+            expect(app.use).to.have.been.called;
         });
     });
 

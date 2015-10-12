@@ -3,7 +3,7 @@
 var url = require('url');
 var Cirrus = require('./Cirrus');
 
-class Middleware {
+class SessionMiddleware {
 
     constructor(config, cirrus) {
         this.cirrus = cirrus || new Cirrus(config);
@@ -47,4 +47,4 @@ class Middleware {
 	}
 };
 
-module.exports = Middleware;
+module.exports = SessionMiddleware;

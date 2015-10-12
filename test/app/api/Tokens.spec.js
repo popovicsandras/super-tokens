@@ -2,11 +2,11 @@
 
 'use strict';
 
-var TokensManager = require('../../../app/api/TokensManager');
+var Tokens = require('../../../app/api/Tokens');
 
-describe('TokensManager', function() {
+describe('Tokens', function() {
 
-    var tokensManager;
+    var tokens;
 
     beforeEach(function() {
         var tokensCollection = {
@@ -16,32 +16,32 @@ describe('TokensManager', function() {
             remove: sinon.spy()
         };
 
-        tokensManager = new TokensManager(tokensCollection);
+        tokens = new Tokens(tokensCollection);
 
     });
 
     it('should query the tokens collection in order to retrieve all the tokens created by the user ', function() {
         // Act
-        tokensManager.findAllTokensOfUser(1111);
+        tokens.findAllTokensOfUser(1111);
 
         // Assert
-        expect(tokensManager.tokensCollection.find).to.have.been.calledWith({useruuid:1111});
+        expect(tokens.tokensCollection.find).to.have.been.calledWith({useruuid:1111});
     });
 
     it('should query the tokens collection in order to retrieve the info related to the requested token', function() {
         // Act
-        tokensManager.findById(2222);
+        tokens.findById(2222);
 
         // Assert
-        expect(tokensManager.tokensCollection.findById).to.have.been.calledWith(2222);
+        expect(tokens.tokensCollection.findById).to.have.been.calledWith(2222);
     });
 
     it('should insert the new token in the collection', function() {
         // Act
-        tokensManager.create({ content: 'mycontent', maxAge: 123456, type: 'passwordreset'});
+        tokens.create({ content: 'mycontent', maxAge: 123456, type: 'passwordreset'});
 
         // Assert
-        expect(tokensManager.tokensCollection.insert).to.have.been.calledWith({ content: 'mycontent', maxAge: 123456, type: 'passwordreset'});
+        expect(tokens.tokensCollection.insert).to.have.been.calledWith({ content: 'mycontent', maxAge: 123456, type: 'passwordreset'});
     });
 
 
@@ -49,10 +49,10 @@ describe('TokensManager', function() {
         var tokenID = 1234;
 
         // Act
-        tokensManager.delete(tokenID);
+        tokens.delete(tokenID);
 
         // Assert
-        expect(tokensManager.tokensCollection.remove).to.have.been.calledWith({_id: 1234});
+        expect(tokens.tokensCollection.remove).to.have.been.calledWith({_id: 1234});
     });
 
 
