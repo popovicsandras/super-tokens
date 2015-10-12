@@ -16,9 +16,9 @@ describe('TokensAPI', function() {
             uuid: 'fake-user-uuid'
         };
 
-        tokensAPI = new TokensAPI(user);
+        tokensAPI = new TokensAPI();
 
-        request = { params: {}, body: {}};
+        request = { params: {}, body: {}, user: {}};
         response = {
             json: sinon.spy(),
             status: sinon.spy()
@@ -58,6 +58,8 @@ describe('TokensAPI', function() {
             return fakePromise;
         });
 
+        request.user.uuid = '326776';
+
         var expectedResponse =[{_id: "56177e04549220a3b38eb26e", content: "assHJJJJaaaa", type: "passwordreset", expirydate: "10-10-2014Z10:00",useruuid: "326776"}];
 
         // Act
@@ -65,7 +67,7 @@ describe('TokensAPI', function() {
         fakePromise.resolve();
 
         // Assert
-        expect(stubFindAllTokensOfUser).to.have.been.calledWith('fake-user-uuid');
+        expect(stubFindAllTokensOfUser).to.have.been.calledWith('326776');
         expect(response.status).to.have.been.calledWith(200);
         expect(response.json).to.have.been.calledWith(expectedResponse);
 
@@ -78,6 +80,8 @@ describe('TokensAPI', function() {
         var stubFindAllTokensOfUser = sinon.stub(tokensAPI.tokensManager, 'findAllTokensOfUser', function() {
             return fakePromise;
         });
+
+        request.user.uuid = '326776';
 
         // Act
         tokensAPI.getAll(request, response);

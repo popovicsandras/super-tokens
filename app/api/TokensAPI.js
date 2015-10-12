@@ -3,20 +3,12 @@ var TokensManager = require('./TokensManager');
 function TokensAPI(user) {
     'use strict';
     this.tokensManager = new TokensManager();
-    if(user) {
-        this.user = user;
-    } else {
-       throw {
-           name: "Error",
-           message: "User is not valid"
-       };
-    }
 }
 
 TokensAPI.prototype = {
 
     getAll: function(request, response) {
-        var resultPromise = this.tokensManager.findAllTokensOfUser(this.user.uuid);
+        var resultPromise = this.tokensManager.findAllTokensOfUser(request.user.uuid);
 
         resultPromise.success(this.sendData.bind(this, response));
         resultPromise.error(this.sendError.bind(this, response));
