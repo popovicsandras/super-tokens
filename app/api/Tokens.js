@@ -1,39 +1,39 @@
+'use strict';
 var mongo = require('mongodb');
 var db = require('monk')('localhost/tokensdb');
 
-function Tokens(tokensCollection) {
-    if(tokensCollection) {
-        this.tokensCollection = tokensCollection;
-    } else {
-        this.tokensCollection = db.get('tokens');
+class Tokens {
+
+    constructor(tokensCollection) {
+        if (tokensCollection) {
+            this.tokensCollection = tokensCollection;
+        } else {
+            this.tokensCollection = db.get('tokens');
+        }
     }
-}
 
-
-Tokens.prototype = {
-
-    findAllTokensOfUser: function(userUuid) {
+    findAllTokensOfUser(userUuid) {
         var promise = this.tokensCollection.find({useruuid: userUuid});
         return promise;
-    },
+    }
 
-    findById: function(tokenID) {
+    findById(tokenID) {
         var promise = this.tokensCollection.findById(tokenID);
         return promise;
-    },
+    }
 
-    create: function(tokenData) {
+    create(tokenData) {
         var promise = this.tokensCollection.insert(tokenData);
         return promise;
-    },
+    }
 
-    delete: function(tokenId) {
+    delete(tokenId) {
         var promise = this.tokensCollection.remove({
             _id: tokenId
         });
         return promise;
     }
 
-};
+}
 
 module.exports = Tokens;
