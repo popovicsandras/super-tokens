@@ -101,14 +101,15 @@ describe('TokensAPI', function() {
             return fakePromise;
         });
 
+        request.user.uuid = 1234;
         request.body.TokenRequest = {content:'xx',maxAge:1,type:'web'};
 
         // Act
         tokensAPI.create(request, response);
-        fakePromise.success();
+        fakePromise.resolve();
 
         // Assert
-        expect(stubCreate).to.have.been.calledWith({content:'xx',maxAge:1,type:'web'});
+        expect(stubCreate).to.have.been.calledWith({content:'xx',maxAge:1,type:'web', useruuid: 1234 });
 
         // Teardown
         stubCreate.restore();
@@ -120,6 +121,7 @@ describe('TokensAPI', function() {
             return fakePromise;
         });
 
+        request.user.uuid = 1234;
         request.body.TokenRequest = {content:'xx',maxAge:1,type:'web'};
 
         // Act
@@ -127,7 +129,7 @@ describe('TokensAPI', function() {
         fakePromise.reject();
 
         // Assert
-        expect(stubCreate).to.have.been.calledWith({content:'xx',maxAge:1,type:'web'});
+        expect(stubCreate).to.have.been.calledWith({content:'xx',maxAge:1,type:'web', useruuid: 1234});
         expect(response.status).to.have.been.calledWith(500);
 
         // Teardown
@@ -144,7 +146,7 @@ describe('TokensAPI', function() {
 
         // Act
         tokensAPI.delete(request, response);
-        fakePromise.success();
+        //fakePromise.success(sinon.spy());
 
         // Assert
         expect(stubDelete).to.have.been.calledWith(1234);
@@ -162,7 +164,7 @@ describe('TokensAPI', function() {
 
         // Act
         tokensAPI.delete(request, response);
-        fakePromise.reject();
+        fakePromise.reject(sinon.spy());
 
         // Assert
         expect(response.status).to.have.been.calledWith(500);
