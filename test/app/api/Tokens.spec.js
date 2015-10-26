@@ -55,5 +55,15 @@ describe('Tokens', function() {
         expect(tokens.tokensCollection.remove).to.have.been.calledWith({_id: 1234});
     });
 
+    it('should delete the expired tokens', function() {
+
+        var dateSpy = sinon.stub(Date, 'now').returns(1445855465095)
+        // Act
+        tokens.destroyExpired();
+
+        // Assert
+        expect(tokens.tokensCollection.remove).to.have.been.calledWith({expiryDate: {$lt: 1445855465095}});
+    });
+
 
 });

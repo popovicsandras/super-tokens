@@ -34,6 +34,10 @@ class Tokens {
         return promise;
     }
 
+    destroyExpired() {
+        var promise = this.tokensCollection.remove({ expiryDate: {$lt: Date.now()}});
+    }
+
 }
 
 module.exports = Tokens;
