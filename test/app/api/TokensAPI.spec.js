@@ -4,7 +4,7 @@
 
 var TokensAPI = require('../../../app/api/TokensAPI');
 
-describe.skip('TokensAPI', function() {
+describe('TokensAPI', function() {
 
     var tokensAPI,
         request,

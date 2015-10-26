@@ -1,6 +1,7 @@
 'use strict';
 
 var url = require('url');
+var log = require('log4js-config').get('auth.cirrus');
 
 class Cirrus {
 
@@ -8,6 +9,7 @@ class Cirrus {
         this.host = config.environment + '.workshare.com';
         this.name = config.environment + '_session_id';
         this.http = http || require('http');
+        log.debug("Working with host", this.host, "and session cookie", this.name);
     }
 
     currentUser(sessionid, onSuccess, onFailure) {
@@ -19,6 +21,7 @@ class Cirrus {
             }
         };
 
+        log.debug("Going to call Cirrus with", options);
         this.http.request(options, this.onSessionCheck.bind(this, onSuccess, onFailure)).end();
     }
 
@@ -39,7 +42,7 @@ class Cirrus {
                     onSuccess(user);
                 }
             } catch (err) {
-                // mmmm some logging here maybe?
+                log.warn("Unexpected error while calling Cirrus", err);
             } finally {
                 if (success == false) {
                     onFailure(userData);

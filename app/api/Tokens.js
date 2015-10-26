@@ -1,6 +1,7 @@
 'use strict';
 var mongo = require('mongodb');
 var db = require('monk')('localhost/tokensdb');
+var log = require('log4js-config').get('tokens.db');
 
 class Tokens {
 
@@ -13,21 +14,25 @@ class Tokens {
     }
 
     findAllTokensOfUser(userUuid) {
+        log.debug("going to find all tokens of user ", userUuid)
         var promise = this.tokensCollection.find({useruuid: userUuid});
         return promise;
     }
 
-    findById(tokenID) {
-        var promise = this.tokensCollection.findById(tokenID);
+    findById(tokenId) {
+        log.debug("going to find tokens ", tokenId)
+        var promise = this.tokensCollection.findById(tokenId);
         return promise;
     }
 
     create(tokenData) {
+        log.debug("going to create token ", tokenData)
         var promise = this.tokensCollection.insert(tokenData);
         return promise;
     }
 
     delete(tokenId) {
+        log.debug("going to delete token ", tokenId)
         var promise = this.tokensCollection.remove({
             _id: tokenId
         });
@@ -35,7 +40,8 @@ class Tokens {
     }
 
     destroyExpired() {
-        var promise = this.tokensCollection.remove({ expiryDate: {$lt: Date.now()}});
+        log.debug("periodic cleaning on tokens happening!")
+        this.tokensCollection.remove({ expiryDate: {$lt: Date.now()}});
     }
 
 }

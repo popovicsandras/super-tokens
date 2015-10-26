@@ -1,0 +1,51 @@
+{
+    "reloadSecs": 60,
+    "appenders": [{
+            "type": "console",
+            "layout": {
+                "type": "pattern",
+                "pattern": "%m"
+            },
+            "category": "app"
+        }, {
+            "type": "console",
+            "layout": {
+                "type": "pattern",
+                "pattern": "%m"
+            },
+            "category": "tokens.api"
+        }, {
+            "type": "console",
+            "layout": {
+                "type": "pattern",
+                "pattern": "%m"
+            },
+            "category": "tokens.db"
+        }, {
+            "type": "console",
+            "layout": {
+                "type": "pattern",
+                "pattern": "%m"
+            },
+            "category": "auth.cirrus"
+        }, {
+            "type": "console",
+            "layout": {
+                "type": "pattern",
+                "pattern": "%m"
+            },
+            "category": "auth.middleware"
+        }, {
+            "type": "console",
+            "layout": {
+                "type": "pattern",
+                "pattern": "%m"
+            },
+            "category": "cleaner"
+        }
+    ],
+    "levels": {
+        "[all]": "INFO",
+        "sample": "DEBUG"
+    }
+}
