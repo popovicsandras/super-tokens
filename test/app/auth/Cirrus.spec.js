@@ -3,6 +3,7 @@
 'use strict';
 
 var Cirrus = require('../../../app/auth/Cirrus');
+var request = require('request');
 
 describe('Cirrus', function() {
 
@@ -110,6 +111,75 @@ describe('Cirrus', function() {
         expect(onFailure).calledWith("some_rubbish");
         sinon.assert.notCalled(onSuccess);
     });
+
+    describe('Healthcheck', function() {
+
+        it('should invoke is_alive endpoint', function() {
+            // Arrange
+            var spyRequest = sinon.spy(request, 'get');
+
+            // Act
+            cirrus().healthcheck();
+
+            // Assert
+            expect(spyRequest).to.have.been.calledWith({ url: 'https://' + config.environment + '.workshare.com/is_alive',
+                strictSSL: false});
+
+            // Teardown
+            spyRequest.restore();
+
+        });
+
+        it('should return a promise that when it has solved returns a successfull healthy status', function(done) {
+            // Arrange
+            var response = {
+                statusCode: 200,
+                statusMessage: 'OK'
+            };
+
+            // Sorry, but I'm learning - yields: causes the stub to call the first callback it receives with the provided arguments
+            var stubRequest = sinon.stub(request, 'get').yields(null, response);
+
+            // Act
+            cirrus().healthcheck().then(function(data) {
+                expect(data).to.be.eql({healthy: true, message: 'OK' });
+                done();
+            }, function(error) {
+                done();
+            });
+
+            // Teardown
+            stubRequest.restore();
+
+        });
+
+        it('should return a promise that when it has rejected returns an unhealthy status', function(done) {
+            // Arrange
+            var response = {
+                statusCode: 200,
+                statusMessage: 'OK'
+            };
+            var error = { message: 'I NEED HOLIDAYS - I AM KO'};
+
+            var stubRequest = sinon.stub(request, 'get').yields(error, response);
+
+            // Act
+            cirrus().healthcheck().then(function(data) {
+                done();
+            }, function(error) {
+                expect(error).to.be.eql({healthy: false, message: 'I NEED HOLIDAYS - I AM KO' });
+                done();
+            });
+
+            // Teardown
+            stubRequest.restore();
+
+        });
+
+
+    });
+
+
 
 
     var simulateHttpResponse = function(text) {

@@ -2,6 +2,8 @@
 
 var url = require('url');
 var log = require('log4js-config').get('auth.cirrus');
+var request = require('request');
+var Q = require('q');
 
 class Cirrus {
 
@@ -10,6 +12,25 @@ class Cirrus {
         this.name = config.environment + '_session_id';
         this.http = http || require('http');
         log.debug("Working with host", this.host, "and session cookie", this.name);
+    }
+
+    healthcheck() {
+        var deferred = Q.defer();
+
+        var requestOptions = {
+            url: 'https://' + this.host + '/is_alive',
+            strictSSL: false
+        };
+
+        request.get(requestOptions, function (error, response) {
+            if (!error && response.statusCode === 200) {
+                deferred.resolve({healthy: true, message: response.statusMessage });
+            } else {
+                deferred.reject({healthy: false, message: error.message });
+            }
+        });
+
+        return deferred.promise;
     }
 
     currentUser(sessionid, onSuccess, onFailure) {
