@@ -2,6 +2,7 @@
 var mongo = require('mongodb');
 var db = require('monk')('localhost/tokensdb');
 var log = require('log4js-config').get('tokens.db');
+var Q = require('q');
 
 class Tokens {
 
@@ -11,6 +12,21 @@ class Tokens {
         } else {
             this.tokensCollection = db.get('tokens');
         }
+    }
+
+    healthcheck() {
+        var deferred = Q.defer();
+        var promise = this.tokensCollection.find({});
+
+        promise.success(function () {
+            deferred.resolve({healthy: true, message: 'OK'});
+        });
+
+        promise.error(function (error) {
+            deferred.reject({healthy: false, message: error.message});
+        });
+
+        return deferred.promise;
     }
 
     findAllTokensOfUser(userUuid) {
@@ -41,7 +57,7 @@ class Tokens {
 
     destroyExpired() {
         log.debug("periodic cleaning on tokens happening!")
-        this.tokensCollection.remove({ expiryDate: {$lt: Date.now()}});
+        this.tokensCollection.remove({expiryDate: {$lt: Date.now()}});
     }
 
 }
