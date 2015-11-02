@@ -155,10 +155,7 @@ describe('Cirrus', function() {
 
         it('should return a promise that when it has rejected returns an unhealthy status', function(done) {
             // Arrange
-            var response = {
-                statusCode: 200,
-                statusMessage: 'OK'
-            };
+            var response = {};
             var error = { message: 'I NEED HOLIDAYS - I AM KO'};
 
             var stubRequest = sinon.stub(request, 'get').yields(error, response);
