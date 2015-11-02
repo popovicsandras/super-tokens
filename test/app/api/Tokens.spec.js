@@ -70,6 +70,8 @@ describe('Tokens', function() {
     describe('Healthcheck', function() {
 
         beforeEach(function() {
+            sinon.stub(process, 'nextTick').yields();
+
             fakePromise = {
                 successCallback: undefined,
                 failureCallback: undefined,
@@ -100,64 +102,56 @@ describe('Tokens', function() {
 
             this.tokens = new Tokens(fakeTokensCollection);
 
+            this.findStub = sinon.stub(this.tokens.tokensCollection, 'find', function() {
+                return fakePromise;
+            });
+
+        });
+
+        afterEach(function() {
+            this.findStub.restore();
+            process.nextTick.restore();
         });
 
 
         it('should make a query to the tokens collection', function() {
-            // Arrange
-            var findStub = sinon.stub(this.tokens.tokensCollection, 'find', function() {
-                return fakePromise;
-            });
 
             // Act
             this.tokens.healthcheck();
 
             // Expect
-            expect(findStub).to.have.been.calledWith({});
-
-            // Teardown
-            findStub.restore();
+            expect(this.findStub).to.have.been.calledWith({});
 
         });
 
-        it('should solve the promise with a good healthy message if the query was successfull', function(done) {
+        it('should solve the promise with a good healthy message if the query was successfull', function() {
             // Arrange
-            var findStub = sinon.stub(this.tokens.tokensCollection, 'find', function() {
-                return fakePromise;
-            });
-
-            this.tokens.healthcheck().then(function(successData) {
-                expect(successData).to.be.eql({healthy: true, message: 'OK' });
-                done();
-            }, function(errorData) {
-                done();
-            });
+            var success = sinon.spy();
+            var fail = sinon.spy();
 
             // Act
+            this.tokens.healthcheck().then(success).catch(fail);
             fakePromise.resolve();
 
-            // Teardown
-            findStub.restore();
+            // Expect
+            expect(success).to.have.been.calledWith({healthy: true, message: 'OK' });
+            expect(fail).to.not.have.been.called;
+
         });
 
-        it('should reject the promise with a bad healthy message if the query was unsuccessfull', function(done) {
+        it('should reject the promise with a bad healthy message if the query was unsuccessfull', function() {
             // Arrange
-            var findStub = sinon.stub(this.tokens.tokensCollection, 'find', function() {
-                return fakePromise;
-            });
-
-            this.tokens.healthcheck().then(function(successData) {
-                done();
-            }, function(errorData) {
-                expect(errorData).to.be.eql({healthy: false, message: 'I AM KO' });
-                done();
-            });
+            var success = sinon.spy();
+            var fail = sinon.spy();
 
             // Act
+            this.tokens.healthcheck().then(success).catch(fail);
             fakePromise.reject();
 
-            // Teardown
-            findStub.restore();
+            // Expect
+            expect(fail).to.have.been.calledWith({healthy: false, message: 'I AM KO' });
+            expect(success).to.not.have.been.called;
+
         });
 
     });
