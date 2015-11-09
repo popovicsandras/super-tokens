@@ -21,40 +21,57 @@ class Healthcheck {
     runCirrusHealthcheck(callback) {
         this.cirrus
             .healthcheck()
-            .then(function(success) {
-                callback(null, success);
-            }, function(error) {
-                callback(null, error);
+            .then(function(healthMessage) {
+                callback(null, healthMessage);
+            })
+            .catch(function(healthMessage) {
+                healthMessage.system = 'cirrus';
+                callback(healthMessage);
             });
     }
 
     runTokensHealthcheck(callback) {
         this.tokens
             .healthcheck()
-            .then(function(success) {
-                callback(null, success);
-            }, function(error) {
-                callback(null, error);
+            .then(function(healthMessage) {
+                callback(null, healthMessage);
+            })
+            .catch(function(healthMessage) {
+                healthMessage.system = 'tokens';
+
+                callback(healthMessage);
             });
     }
 
 
     get(request, response) {
-        var healthcheck;
+        var healthcheck = {};
 
         async.parallel([this.runCirrusHealthcheck.bind(this), this.runTokensHealthcheck.bind(this)], function(err, results) {
-            healthcheck = {
-                cirrus: {
-                    healthy: results[0].healthy,
-                    message: results[0].message
-                },
-                tokens: {
-                    healthy: results[1].healthy,
-                    message: results[1].message
+            if(err) {
+                response.status(400);
+
+                healthcheck[err.system] = {
+                    healthy: err.healthy,
+                    message: err.message
                 }
+
+            } else {
+                response.status(200);
+
+                healthcheck = {
+                    cirrus: {
+                        healthy: results[0].healthy,
+                        message: results[0].message
+                    },
+                    tokens: {
+                        healthy: results[1].healthy,
+                        message: results[1].message
+                    }
+                }
+
             }
 
-            response.status(200);
             response.send(healthcheck);
         });
 

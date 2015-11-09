@@ -101,16 +101,16 @@ describe('Healthcheck', function() {
             expect(this.healthcheckStub).to.have.been.called;
         });
 
-        it('should call the callback with success if the cirrus healthcheck is good', function() {
+        it('should call the callback with the cirrus health message', function() {
             // Arrange
             var callback = sinon.spy();
 
             // Act
             healthcheckAPI.runCirrusHealthcheck(callback);
-            this.promise.resolve({healthy: false, message: 'I AM GOOD SHAPE'});
+            this.promise.resolve({foo: 'bar'});
 
             // Assert
-            expect(callback).to.have.been.calledWith(null, {healthy: false, message: 'I AM GOOD SHAPE'});
+            expect(callback).to.have.been.calledWith(null, {foo: 'bar'});
 
         });
 
@@ -121,10 +121,10 @@ describe('Healthcheck', function() {
 
             // Act
             healthcheckAPI.runCirrusHealthcheck(callback);
-            this.promise.reject({healthy: false, message: 'I AM KO' });
+            this.promise.reject({foo: 'bar' });
 
             // Assert
-            expect(callback).to.have.been.calledWith(null, {healthy: false, message: 'I AM KO' });
+            expect(callback).to.have.been.calledWith({system: 'cirrus', foo: 'bar' });
 
         });
 
@@ -163,10 +163,11 @@ describe('Healthcheck', function() {
 
             // Act
             healthcheckAPI.runTokensHealthcheck(callback);
-            this.promise.resolve({healthy: false, message: 'I AM GOOD SHAPE'});
+            this.promise.resolve({foo: 'bar'});
 
             // Assert
-            expect(callback).to.have.been.calledWith(null, {healthy: false, message: 'I AM GOOD SHAPE'});
+            expect(callback).to.have.been.calledWith(null, {foo: 'bar'});
+            expect(response.status).to.have.been.calledWith(200);
 
         });
 
@@ -176,10 +177,11 @@ describe('Healthcheck', function() {
 
             // Act
             healthcheckAPI.runTokensHealthcheck(callback);
-            this.promise.reject({healthy: false, message: 'I AM KO' });
+            this.promise.reject({foo: 'bar'});
 
             // Assert
-            expect(callback).to.have.been.calledWith(null, {healthy: false, message: 'I AM KO' });
+            expect(callback).to.have.been.calledWith({system: 'tokens', foo: 'bar'});
+            expect(response.status).to.have.been.calledWith(400);
 
         });
 
