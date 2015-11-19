@@ -2,7 +2,7 @@
 
 'use strict';
 
-var Cirrus = require('../../../app/auth/Cirrus');
+var Cirrus = require('../source/Cirrus');
 var request = require('request');
 
 describe('Cirrus', function() {
@@ -130,7 +130,7 @@ describe('Cirrus', function() {
 
         });
 
-        it('should return a promise that when it has solved returns a successfull healthy status', function(done) {
+        it('should return a promise that when it has solved returns a successful healthy status', function(finished) {
             // Arrange
             var response = {
                 statusCode: 200,
@@ -142,11 +142,8 @@ describe('Cirrus', function() {
 
             // Act
             cirrus().healthcheck().then(function(data) {
-                expect(data).to.be.eql({healthy: true, message: 'OK' });
-                done();
-            }, function(error) {
-                done();
-            });
+                expect(data).to.be.eql({healthy: true, message: 'OK', name: 'cirrus.auth'});
+            }).done(finished);
 
             // Teardown
             stubRequest.restore();

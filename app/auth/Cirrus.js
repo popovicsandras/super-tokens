@@ -16,18 +16,26 @@ class Cirrus {
 
     healthcheck() {
         var deferred = Q.defer();
-
         var requestOptions = {
             url: 'https://' + this.host + '/is_alive',
             strictSSL: false
         };
 
+
         request.get(requestOptions, function (error, response) {
+            var result = {
+                name: "cirrus.auth"
+            };
+
             if (!error && response.statusCode === 200) {
-                deferred.resolve({healthy: true, message: response.statusMessage });
+                result.healthy = true;
+                result.message = response.statusMessage;
             } else {
-                deferred.reject({healthy: false, message: error.message });
+                result.healthy = false;
+                result.message = error.message;
             }
+
+            deferred.resolve(result);
         });
 
         return deferred.promise;

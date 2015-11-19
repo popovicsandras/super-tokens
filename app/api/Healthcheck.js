@@ -23,10 +23,6 @@ class Healthcheck {
             .healthcheck()
             .then(function(healthMessage) {
                 callback(null, healthMessage);
-            })
-            .catch(function(healthMessage) {
-                healthMessage.system = 'cirrus';
-                callback(healthMessage);
             });
     }
 
@@ -35,11 +31,6 @@ class Healthcheck {
             .healthcheck()
             .then(function(healthMessage) {
                 callback(null, healthMessage);
-            })
-            .catch(function(healthMessage) {
-                healthMessage.system = 'tokens';
-
-                callback(healthMessage);
             });
     }
 
@@ -48,31 +39,25 @@ class Healthcheck {
         var healthcheck = {};
 
         async.parallel([this.runCirrusHealthcheck.bind(this), this.runTokensHealthcheck.bind(this)], function(err, results) {
-            if(err) {
-                response.status(400);
 
-                healthcheck[err.system] = {
-                    healthy: err.healthy,
-                    message: err.message
-                }
+            var healthy = results.reduce(function(value, result) {
+                return value && result.healthy
+            }, true);
 
-            } else {
+            if(healthy) {
                 response.status(200);
-
-                healthcheck = {
-                    cirrus: {
-                        healthy: results[0].healthy,
-                        message: results[0].message
-                    },
-                    tokens: {
-                        healthy: results[1].healthy,
-                        message: results[1].message
-                    }
-                }
-
+            } else {
+                response.status(500);
             }
 
-            response.send(healthcheck);
+            var output = results.reduce(function(value, result) {
+                value[result.name] = { healthy: result.healthy, message: result.message};
+
+                return value;
+
+            }, {});
+
+            response.send(output);
         });
 
     }

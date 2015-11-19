@@ -19,11 +19,11 @@ class Tokens {
         var promise = this.tokensCollection.find({});
 
         promise.success(function () {
-            deferred.resolve({healthy: true, message: 'OK'});
+            deferred.resolve({name: "tokens", healthy: true, message: 'OK'});
         });
 
         promise.error(function (error) {
-            deferred.reject({healthy: false, message: error.message});
+            deferred.resolve({name: "tokens", healthy: false, message: error.message});
         });
 
         return deferred.promise;

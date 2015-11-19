@@ -1,4 +1,4 @@
-/* global beforeEach, describe, it, expect, sinon */
+npm/* global beforeEach, describe, it, expect, sinon */
 
 'use strict';
 
